@@ -1,48 +1,47 @@
+import { useContext } from "react";
+import CartContext from "../../Context/cart-context";
 import Modal from "../UI/Modal";
 import classes from "./Cart.module.css";
-import { useContext } from "react";
-import CartContext from "../../context/cart-context";
 import CartItem from "./CartItem";
 
 const Cart = (props) => {
-  const cartCtx = useContext(CartContext);
+  const ctx = useContext(CartContext);
+  const totalPrice = `$${ctx.totalAmount.toFixed(2)}`;
 
-  const cartItemRemoveHandler = (id) => {
-    cartCtx.removeItem(id);
-  };
-  const cartItemAddHandler = (item) => {
-    cartCtx.addItem({ ...item, amount: 1 });
+  const addItemHandler = (item) => {
+    ctx.addItem({ ...item, amount: 1 });
   };
 
-  const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
-  const hasItem = cartCtx.items.length > 0;
-  const cartIems = (
+  const removeItemHandler = (id) => {
+    ctx.removeItem(id);
+  };
+  const cartItems = (
     <ul className={classes["cart-items"]}>
-      {cartCtx.items.map((item) => (
+      {ctx.items.map((item) => (
         <CartItem
           key={item.id}
           name={item.name}
           amount={item.amount}
           price={item.price}
-          onRemove={cartItemRemoveHandler.bind(null, item.id)}
-          onAdd={cartItemAddHandler.bind(null, item)}
-        ></CartItem>
+          onAdd={addItemHandler.bind(null, item)}
+          onRemove={removeItemHandler.bind(null, item.id)}
+        />
       ))}
     </ul>
   );
 
   return (
-    <Modal onClose={props.onCloseCart}>
-      {cartIems}
+    <Modal hideCart={props.hideCart}>
+      {!ctx.items.length ? <p>Cart is empty</p> : cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
-        <span>{totalAmount}</span>
+        <span>{ctx.items.length ? totalPrice : "$0.00"}</span>
       </div>
       <div className={classes.actions}>
-        <button className={classes["button--alt"]} onClick={props.onCloseCart}>
+        <button className={classes["button--alt"]} onClick={ctx.hideCart}>
           Close
         </button>
-        {hasItem && <button className={classes.button}>Order</button>}
+        <button className={classes.button}>Order</button>
       </div>
     </Modal>
   );
