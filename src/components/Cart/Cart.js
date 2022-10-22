@@ -63,14 +63,10 @@ const Cart = (props) => {
     </div>
   );
 
-  if (
-    (isCartEmpty && isCheckout) ||
-    (!isCartEmpty && !isCheckout) ||
-    (isCartEmpty && !isCheckout)
-  ) {
-    cartContent = modalActions;
-  } else if (!isCartEmpty && isCheckout) {
+  if (!isCartEmpty && isCheckout) {
     cartContent = <Checkout onCancel={ctx.hideCart} />;
+  } else {
+    cartContent = modalActions;
   }
 
   return (
