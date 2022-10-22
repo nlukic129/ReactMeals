@@ -1,12 +1,14 @@
-import { useContext } from "react";
+import { Fragment, useContext, useState } from "react";
 import CartContext from "../../Context/cart-context";
 import Modal from "../UI/Modal";
 import classes from "./Cart.module.css";
 import CartItem from "./CartItem";
+import Checkout from "./Checkout";
 
 const Cart = (props) => {
   const ctx = useContext(CartContext);
   const totalPrice = `$${ctx.totalAmount.toFixed(2)}`;
+  const [isCheckout, setIsCheckout] = useState(false);
 
   const addItemHandler = (item) => {
     ctx.addItem({ ...item, amount: 1 });
@@ -14,6 +16,10 @@ const Cart = (props) => {
 
   const removeItemHandler = (id) => {
     ctx.removeItem(id);
+  };
+
+  const checkoutHandler = () => {
+    setIsCheckout(true);
   };
   const cartItems = (
     <ul className={classes["cart-items"]}>
@@ -30,6 +36,27 @@ const Cart = (props) => {
     </ul>
   );
 
+  const modalActions = (
+    <div className={classes.actions}>
+      {ctx.items.length ? (
+        <Fragment>
+          <button className={classes["button--alt"]} onClick={ctx.hideCart}>
+            Close
+          </button>
+          <button className={classes.button} onClick={checkoutHandler}>
+            Order
+          </button>
+        </Fragment>
+      ) : (
+        <Fragment>
+          <button className={classes["button--alt"]} onClick={ctx.hideCart}>
+            Close
+          </button>
+        </Fragment>
+      )}
+    </div>
+  );
+
   return (
     <Modal hideCart={props.hideCart}>
       {!ctx.items.length ? <p>Cart is empty</p> : cartItems}
@@ -37,12 +64,8 @@ const Cart = (props) => {
         <span>Total Amount</span>
         <span>{ctx.items.length ? totalPrice : "$0.00"}</span>
       </div>
-      <div className={classes.actions}>
-        <button className={classes["button--alt"]} onClick={ctx.hideCart}>
-          Close
-        </button>
-        <button className={classes.button}>Order</button>
-      </div>
+      {!isCheckout && modalActions}
+      {isCheckout && <Checkout onCancel={ctx.hideCart} />}
     </Modal>
   );
 };
