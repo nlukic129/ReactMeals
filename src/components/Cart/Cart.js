@@ -9,6 +9,8 @@ const Cart = (props) => {
   const ctx = useContext(CartContext);
   const totalPrice = `$${ctx.totalAmount.toFixed(2)}`;
   const [isCheckout, setIsCheckout] = useState(false);
+  let isCartEmpty = true;
+  let cartContent;
 
   const addItemHandler = (item) => {
     ctx.addItem({ ...item, amount: 1 });
@@ -36,9 +38,13 @@ const Cart = (props) => {
     </ul>
   );
 
+  if (ctx.items.length) {
+    isCartEmpty = false;
+  }
+
   const modalActions = (
     <div className={classes.actions}>
-      {ctx.items.length ? (
+      {!isCartEmpty ? (
         <Fragment>
           <button className={classes["button--alt"]} onClick={ctx.hideCart}>
             Close
@@ -57,15 +63,24 @@ const Cart = (props) => {
     </div>
   );
 
+  if (
+    (isCartEmpty && isCheckout) ||
+    (!isCartEmpty && !isCheckout) ||
+    (isCartEmpty && !isCheckout)
+  ) {
+    cartContent = modalActions;
+  } else if (!isCartEmpty && isCheckout) {
+    cartContent = <Checkout onCancel={ctx.hideCart} />;
+  }
+
   return (
     <Modal hideCart={props.hideCart}>
-      {!ctx.items.length ? <p>Cart is empty</p> : cartItems}
+      {isCartEmpty ? <p>Cart is empty</p> : cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
-        <span>{ctx.items.length ? totalPrice : "$0.00"}</span>
+        <span>{!isCartEmpty ? totalPrice : "$0.00"}</span>
       </div>
-      {!isCheckout && modalActions}
-      {isCheckout && <Checkout onCancel={ctx.hideCart} />}
+      {cartContent}
     </Modal>
   );
 };
