@@ -2,7 +2,8 @@ import { Fragment, useEffect, useState } from "react";
 import useHttp from "../../hooks/use-http";
 import AveilableMeals from "./AveilableMeals";
 import MealsSummary from "./MealsSummary";
-import classes from "./LoadError.module.css";
+import classes from "./Load.module.css";
+import Feedback from "../UI/Feedback";
 
 const Meals = () => {
   const { error, isLoading, sendRequest: getMeals } = useHttp();
@@ -35,7 +36,7 @@ const Meals = () => {
     return (
       <Fragment>
         <MealsSummary />
-        <div className={classes.error}>{error}</div>
+        <Feedback isSuccess={false}>{error}</Feedback>
       </Fragment>
     );
   }

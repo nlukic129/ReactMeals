@@ -1,0 +1,22 @@
+.success {
+  border: 1px solid;
+  margin: auto;
+  padding: 15px 10px 15px 15px;
+  border-radius: 15px;
+  color: green;
+  background-color: rgb(197, 236, 197);
+  width: fit-content;
+}
+
+.error {
+  border: 1px solid;
+  margin: auto;
+  padding: 15px 10px 15px 50px;
+  border-radius: 15px;
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  color: #d8000c;
+  background-color: #ffbaba;
+  background-image: url("https://i.imgur.com/GnyDvKN.png");
+  width: fit-content;
+}

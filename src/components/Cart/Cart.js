@@ -1,5 +1,7 @@
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import CartContext from "../../Context/cart-context";
+import useHttp from "../../hooks/use-http";
+import Feedback from "../UI/Feedback";
 import Modal from "../UI/Modal";
 import classes from "./Cart.module.css";
 import CartItem from "./CartItem";
@@ -11,6 +13,8 @@ const Cart = (props) => {
   const [isCheckout, setIsCheckout] = useState(false);
   let isCartEmpty = true;
   let cartContent;
+  const { error, isLoading, sendRequest: submitOrder } = useHttp();
+  const [feedback, setFeedback] = useState();
 
   const addItemHandler = (item) => {
     ctx.addItem({ ...item, amount: 1 });
@@ -23,6 +27,23 @@ const Cart = (props) => {
   const checkoutHandler = () => {
     setIsCheckout(true);
   };
+
+  const submitOrderHandler = (userData) => {
+    submitOrder({
+      url: "https://reactmeals-f6e16-default-rtdb.europe-west1.firebasedatabase.app/orders.json",
+      method: "POST",
+      body: { user: userData, orderedItems: ctx.items },
+    });
+
+    setFeedback(
+      <Feedback isSuccess={true}>
+        Your order has been accepted. We will contact you soon.
+      </Feedback>
+    );
+
+    ctx.clearItems();
+  };
+
   const cartItems = (
     <ul className={classes["cart-items"]}>
       {ctx.items.map((item) => (
@@ -64,13 +85,22 @@ const Cart = (props) => {
   );
 
   if (!isCartEmpty && isCheckout) {
-    cartContent = <Checkout onCancel={ctx.hideCart} />;
+    cartContent = (
+      <Checkout onConfirm={submitOrderHandler} onCancel={ctx.hideCart} />
+    );
   } else {
     cartContent = modalActions;
   }
 
+  useEffect(() => {
+    if (error) {
+      setFeedback(<Feedback isSuccess={false}>{error}</Feedback>);
+    }
+  }, [error]);
+
   return (
     <Modal hideCart={props.hideCart}>
+      {isLoading ? <p>Sending order data...</p> : feedback}
       {isCartEmpty ? <p>Cart is empty</p> : cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>

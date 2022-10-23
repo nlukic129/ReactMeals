@@ -16,15 +16,3 @@
     transform: rotate(360deg);
   }
 }
-
-.error {
-  border: 1px solid;
-  margin: 2rem auto;
-  padding: 15px 10px 15px 50px;
-  background-repeat: no-repeat;
-  background-position: 10px center;
-  color: #d8000c;
-  background-color: #ffbaba;
-  background-image: url("https://i.imgur.com/GnyDvKN.png");
-  width: 30%;
-}

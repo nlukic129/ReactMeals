@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import useValidate from "../../hooks/use-validate";
 import classes from "./Checkout.module.css";
 
@@ -33,7 +32,9 @@ const Checkout = (props) => {
     inputHandler: inputPostalCodeHandler,
     touchHandler: touchPostalCodeHandler,
     resetHandler: resetPostalCodeHandler,
-  } = useValidate((inputPostalCodeValue) => inputPostalCodeValue.trim() !== "");
+  } = useValidate(
+    (inputPostalCodeValue) => inputPostalCodeValue.trim().length === 5
+  );
 
   const {
     inputValue: inputCityValue,
@@ -51,14 +52,19 @@ const Checkout = (props) => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
 
+    const userData = {
+      name: inputNameValue,
+      city: inputCityValue,
+      street: inputStreetValue,
+      postalCode: inputPostalCodeValue,
+    };
+
     resetCityHandler();
     resetNameHandler();
     resetPostalCodeHandler();
     resetStreetHandler();
 
-    // Upis porudzbina u bazu
-
-    props.onCancel();
+    props.onConfirm(userData);
   };
 
   return (
